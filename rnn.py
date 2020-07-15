@@ -1,5 +1,8 @@
 import tensorflow as tf
 from tensorflow import keras
+from tensorflow.keras import Sequential
+from tensorflow.keras.layers import *
+from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 def prepare(txt, n_words):
@@ -43,10 +46,18 @@ def setup_model(n_words, l):
 	set up the model for nn
 	"""
 	model = Sequential()
-	model.add(Embedding(n_words, 100, input_length=l)
+	model.add(Embedding(n_words, 100, input_length=l))
 	model.add(Bidirectional(LSTM(150)))
 	model.add(Dense(n_words, activation='softmax'))
 	
 	return model
 
-
+def setup_compilation(model, x, y):
+	"""
+	proxy for setting up the compilation properly
+	"""
+	adam = Adam(lr=0.01)
+	model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
+	history = model.fit(x, y, epochs=10, verbose=1)
+	
+	return history
